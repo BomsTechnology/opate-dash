@@ -11,7 +11,7 @@
           <p class="text-center mt-4 italic">Chargement...</p>
         </CardContent>
       </template>
-      <template v-else-if="doctorError || patientError || errors">
+      <template v-else-if="!patient || !doctor || doctorError || patientError || errors">
         <CardContent class="flex flex-col justify-center items-center">
           <img
             src="~/assets/images/error.webp"

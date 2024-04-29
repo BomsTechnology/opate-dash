@@ -29,7 +29,7 @@ export default defineNuxtConfig({
       login: '/',
       callback: '/dashboard',
       include: undefined,
-      exclude: ['/policy', '/payment'],
+      exclude: ['/policy', '/payment', '/payment-success'],
       cookieRedirect: false,
     },
   },

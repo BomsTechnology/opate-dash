@@ -157,6 +157,7 @@ export type Database = {
           id: string
           is_pay: boolean
           patient_id: string
+          payment_id: string | null
           status: boolean
         }
         Insert: {
@@ -165,6 +166,7 @@ export type Database = {
           id?: string
           is_pay?: boolean
           patient_id: string
+          payment_id?: string | null
           status?: boolean
         }
         Update: {
@@ -173,9 +175,17 @@ export type Database = {
           id?: string
           is_pay?: boolean
           patient_id?: string
+          payment_id?: string | null
           status?: boolean
         }
         Relationships: [
+          {
+            foreignKeyName: "conversation_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payment"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "public_conversation_doctor_id_fkey"
             columns: ["doctor_id"]
@@ -371,29 +381,32 @@ export type Database = {
       }
       payment: {
         Row: {
-          conversation_id: string
           created_at: string
+          doctor_id: string
           id: string
+          payment_reference: string
           user_id: string
         }
         Insert: {
-          conversation_id: string
           created_at?: string
+          doctor_id: string
           id?: string
+          payment_reference: string
           user_id: string
         }
         Update: {
-          conversation_id?: string
           created_at?: string
+          doctor_id?: string
           id?: string
+          payment_reference?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "public_payment_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: "payment_doctor_id_fkey"
+            columns: ["doctor_id"]
             isOneToOne: false
-            referencedRelation: "conversation"
+            referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {

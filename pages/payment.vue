@@ -23,7 +23,7 @@
             Oupps !
           </h1>
           <p class="text-center mt-4">
-            Oupps ! Une erreur est survenue. veillez reessayer ultérieurement
+            Oupps ! Une erreur est survenue pendant la tentative de paiement. veillez reessayer ultérieurement
             <span class="font-bold">ou essayer de contacter le support</span>
           </p>
         </CardContent>
@@ -71,7 +71,7 @@
           </button>
           <div
             v-else
-            class="w-16 h-16 border-8 border-[#5eb0ef] rounded-full loader"
+            class=" w-12 h-12 border-8 border-[#5eb0ef] rounded-full loader"
           ></div>
         </CardFooter>
       </template>
@@ -81,11 +81,12 @@
 
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid';
+
 const route = useRoute();
 const supabase = useSupabaseClient<Database>();
 const loading = ref(false);
-const errors = ref(false)
-const config = useRuntimeConfig()
+const errors = ref(false);
+const config = useRuntimeConfig();
 
 const {
   data: doctor,
@@ -115,7 +116,7 @@ const {
 
 async function pay() {
   loading.value = true
-   const { data, error } = await useFetch("https://api.notchpay.co/payments/initialize", {
+  const { data, error } = await useFetch("https://api.notchpay.co/payments/initialize", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -127,7 +128,12 @@ async function pay() {
         reference: uuidv4(),
         description: "M2-MED Payment",
         email: route.query.email || patient?.value.email,
-        phone: route.query.phone || patient?.value.phone_number
+        phone: route.query.phone || patient?.value.phone_number,
+        callback: window.location.origin + "/payment-success",
+        customer_meta: {
+          patient_id: route.query.patient,
+          doctor_id: route.query.doctor
+        }
       }),
 },
     );
@@ -138,25 +144,14 @@ async function pay() {
       return    
     }
 
+    localStorage.setItem('doctor', route.query.doctor);
+    localStorage.setItem('patient', route.query.patient);
     window.location.href = data.value.authorization_url
 }
+
 
 definePageMeta({
   layout: "login",
 });
 </script>
 
-<style>
-@keyframes loader-rotate {
-  0% {
-    transform: rotate(0);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-.loader {
-  border-right-color: transparent;
-  animation: loader-rotate 1s linear infinite;
-}
-</style>

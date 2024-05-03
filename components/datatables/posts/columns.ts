@@ -4,8 +4,9 @@ import Button from '~/components/ui/button/Button.vue';
 import { ArrowUpDown } from 'lucide-vue-next';
 import { Checkbox } from '@/components/ui/checkbox'
 import type { Database } from '~/types/database.types';
+import type { Post } from '~/types/Post';
 
-export const columns: ColumnDef<Database["public"]["Tables"]["post"]["Row"]>[] = [
+export const columns: ColumnDef<Post>[] = [
   {
     id: 'select',
     header: ({ table }) => h(Checkbox, {
@@ -49,17 +50,17 @@ export const columns: ColumnDef<Database["public"]["Tables"]["post"]["Row"]>[] =
     },
   },
   {
-    accessorKey: 'user_id',
+    accessorKey: 'user',
     header: () => h('div', { class: 'flex justify-center w-full' }, 'User'),
     cell: ({ row }) => {
-      return h('div', { class: 'text-center' }, row.getValue('user_id'))
+      return h('div', { class: 'text-center' }, row.original.user.firstname + ' ' + row.original.user.lastname)
     },
   },
   {
-    accessorKey: 'category_id',
+    accessorKey: 'category',
     header: () => h('div', { class: 'flex justify-center w-full' }, 'Category'),
     cell: ({ row }) => {
-      return h('div', { class: 'text-center' }, row.getValue('category_id'))
+      return h('div', { class: 'text-center' }, row.original.category.name_fr)
     },
   },
   {

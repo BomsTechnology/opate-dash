@@ -51,6 +51,12 @@ const { handleSubmit, setValues, values } = useForm({
   validationSchema: PostValidationSchema,
 })
 
+const model = defineModel()
+const handleFile = (e: any) => {
+    let files: FileList = e.target.files;
+    model.value = files[0];
+};
+
 const { data: categories, refresh } = await useAsyncData(
   "categories",
   async () => {
@@ -80,9 +86,17 @@ const submit = handleSubmit(async (values) => {
         </DialogDescription>
       </DialogHeader>
       <form class="space-y-4 overflow-hidden" @submit="submit" :validation-schema="PostValidationSchema">
-
-        <FormField name="level">
-      <FormItem class="flex flex-col" v-bind:model-value="post?.category.id">
+        <Label for="email">Image</Label>
+        <input
+            @change="handleFile"
+            name="file"
+            id="file"
+            type="file"
+            class="block text-sm max-w-full border w-full p-2 rounded"
+            accept="image/*"
+            />
+        <FormField name="category_id">
+      <FormItem class="flex flex-col" v-bind:model-value="post?.category_id">
         <FormLabel>Language</FormLabel>
         <Popover>
           <PopoverTrigger as-child>
@@ -90,35 +104,35 @@ const submit = handleSubmit(async (values) => {
               <Button
                 variant="outline"
                 role="combobox"
-                :class="cn('w-full justify-between', !values.level && 'text-muted-foreground')"
+                :class="cn('w-full justify-between', !values.category_id && 'text-muted-foreground')"
               >
-                {{ values.level ? categories!.find(
-                  (level) => level.id === values.level,
-                )?.name : 'Select level...' }}
+                {{ values.category_id ? categories!.find(
+                  (category) => category.id === values.category_id,
+                )?.name_fr : 'Select Category...' }}
                 <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </FormControl>
           </PopoverTrigger>
           <PopoverContent class="w-full p-0">
             <Command>
-              <CommandInput placeholder="Search language..." />
+              <CommandInput placeholder="Search Category..." />
               <CommandEmpty>Nothing found.</CommandEmpty>
               <CommandList>
                 <CommandGroup>
                   <CommandItem
-                    v-for="level in categories"
-                    :key="level.id"
-                    :value="level.name"
+                    v-for="category in categories"
+                    :key="category.id"
+                    :value="category.id"
                     @select="() => {
                       setValues({
-                        level: level.id,
+                        category_id: category.id,
                       })
                     }"
                   >
                     <Check
-                      :class="cn('mr-2 h-4 w-4', level.id === values.level ? 'opacity-100' : 'opacity-0')"
+                      :class="cn('mr-2 h-4 w-4', category.id === values.category_id ? 'opacity-100' : 'opacity-0')"
                     />
-                    {{ level.name }}
+                    {{ category.name_fr }}
                   </CommandItem>
                 </CommandGroup>
               </CommandList>
@@ -129,28 +143,13 @@ const submit = handleSubmit(async (values) => {
       </FormItem>
     </FormField>
         
-    <div class="sm:flex gap-2">
-        <FormField v-slot="{ componentField }"  name="post" v-bind:model-value="post?.post">
+        <FormField v-slot="{ componentField }"  name="title" v-bind:model-value="post?.title">
           <FormItem>
-            <FormLabel>Posts</FormLabel>
+            <FormLabel>Title</FormLabel>
             <FormControl>
               <Input
                 type="text"
-                placeholder="Posts"
-                v-bind="componentField"
-                class="flex-1"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-        <FormField v-slot="{ componentField }"  name="answer" v-bind:model-value="post?.answer">
-          <FormItem>
-            <FormLabel>Answer</FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                placeholder="Answer"
+                placeholder="Title"
                 v-bind="componentField"
                 class="w-full"
               />
@@ -158,51 +157,10 @@ const submit = handleSubmit(async (values) => {
             <FormMessage />
           </FormItem>
         </FormField>
-      </div>
-      <div class="sm:flex gap-2">
-        <FormField v-slot="{ componentField }" name="word1" v-bind:model-value="post?.word1">
+
+      <FormField v-slot="{ componentField }" name="description" v-bind:model-value="post?.description">
           <FormItem>
-            <FormLabel>Posts 1</FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                v-bind="componentField"
-                
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-        <FormField v-slot="{ componentField }" name="word2" v-bind:model-value="post?.word2">
-          <FormItem>
-            <FormLabel>Posts 2</FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                v-bind="componentField"
-                
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-        <FormField v-slot="{ componentField }" name="word3" v-bind:model-value="post?.word3">
-          <FormItem>
-            <FormLabel>Posts 3</FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                v-bind="componentField"
-                
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-      </div>
-      <FormField v-slot="{ componentField }" name="meaning" v-bind:model-value="post?.meaning">
-          <FormItem>
-            <FormLabel>Meaning</FormLabel>
+            <FormLabel>Description</FormLabel>
             <FormControl>
               <Textarea
               class="resize-none"
@@ -217,4 +175,4 @@ const submit = handleSubmit(async (values) => {
     </form>
     </DialogContent>
   </Dialog>
-</template>~/schemas/PostSchema
+</template>

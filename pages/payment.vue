@@ -81,6 +81,7 @@
 
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid';
+import type { Database } from '~/types/database.types';
 
 const route = useRoute();
 const supabase = useSupabaseClient<Database>();
@@ -127,8 +128,8 @@ async function pay() {
         currency: "XAF",
         reference: uuidv4(),
         description: "M2-MED Payment",
-        email: route.query.email || patient?.value.email,
-        phone: route.query.phone || patient?.value.phone_number,
+        email: route.query.email || patient?.value!.email,
+        phone: route.query.phone || patient?.value!.phone_number,
         callback: window.location.origin + "/payment-success",
         customer_meta: {
           patient_id: route.query.patient,
@@ -144,9 +145,9 @@ async function pay() {
       return    
     }
 
-    localStorage.setItem('doctor', route.query.doctor);
-    localStorage.setItem('patient', route.query.patient);
-    window.location.href = data.value.authorization_url
+    localStorage.setItem('doctor', route.query.doctor as string);
+    localStorage.setItem('patient', route.query.patient as string);
+    window.location.href = (data.value as any)?.authorization_url
 }
 
 

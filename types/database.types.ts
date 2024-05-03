@@ -153,29 +153,29 @@ export type Database = {
       conversation: {
         Row: {
           created_at: string
-          doctor_id: string
           id: string
           is_pay: boolean
-          patient_id: string
           payment_id: string | null
+          receiver_id: string
+          sender_id: string
           status: boolean
         }
         Insert: {
           created_at?: string
-          doctor_id: string
           id?: string
           is_pay?: boolean
-          patient_id: string
           payment_id?: string | null
+          receiver_id: string
+          sender_id: string
           status?: boolean
         }
         Update: {
           created_at?: string
-          doctor_id?: string
           id?: string
           is_pay?: boolean
-          patient_id?: string
           payment_id?: string | null
+          receiver_id?: string
+          sender_id?: string
           status?: boolean
         }
         Relationships: [
@@ -188,14 +188,14 @@ export type Database = {
           },
           {
             foreignKeyName: "public_conversation_doctor_id_fkey"
-            columns: ["doctor_id"]
+            columns: ["receiver_id"]
             isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "public_conversation_patient_id_fkey"
-            columns: ["patient_id"]
+            columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
@@ -493,6 +493,7 @@ export type Database = {
           show_email: boolean
           show_phone: boolean
           speciality: string | null
+          status: boolean
           type: string
           website: string | null
         }
@@ -516,6 +517,7 @@ export type Database = {
           show_email?: boolean
           show_phone?: boolean
           speciality?: string | null
+          status?: boolean
           type?: string
           website?: string | null
         }
@@ -539,6 +541,7 @@ export type Database = {
           show_email?: boolean
           show_phone?: boolean
           speciality?: string | null
+          status?: boolean
           type?: string
           website?: string | null
         }

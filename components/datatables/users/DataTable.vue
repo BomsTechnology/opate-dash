@@ -39,8 +39,8 @@ const rowSelection = ref({})
 const props = defineProps<{
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
-    deleteL: (id: string) =>  Promise<void>
-    update: (id: string) =>  Promise<void>
+    setCertfied: (id: string,  state: boolean) =>  Promise<void>
+    setActive: (id: string, state: boolean) =>  Promise<void>
 }>()
 
 const table = useVueTable({
@@ -107,7 +107,7 @@ const table = useVueTable({
                             <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                         </TableCell>
                         <TableCell>
-                        <DataTableDropdown @deleteL="deleteL(row.getValue('id'))" @update="update(row.getValue('id'))" />
+                        <DataTableDropdownUser @setCertfied="setCertfied(row.getValue('id'), row.getValue('certified'))" @setActive="setActive(row.getValue('id'), row.getValue('status'))" />
                     </TableCell>
                     </TableRow>
                 </template>

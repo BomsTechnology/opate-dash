@@ -10,7 +10,19 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
-  modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/supabase'],
+  modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/supabase', ['nuxt-mail', {
+    message: [
+      { name: 'Boms', to: 'bomstechnology@gmail.com' },
+    ],
+    smtp: {
+      host: "smtp.gmail.com",
+      port: 587,
+      auth: {
+        user: 'marcsigha@gmail.com',
+        pass: 'vkak fysg syxu jesz',
+      },
+    },
+  }],],
   tailwindcss: {
     cssPath: ["~/assets/css/tailwind.css", { injectPosition: "first" }],
     configPath: "tailwind.config",

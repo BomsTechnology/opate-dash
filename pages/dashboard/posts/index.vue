@@ -4,6 +4,7 @@ import { useToast } from "~/components/ui/toast";
 import Confirm from "~/components/modals/Confirm.vue";
 import type { Post } from "~/types/Post";
 import { columns } from "~/components/datatables/posts/columns";
+import useFiles from "~/services/useFiles";
 
 definePageMeta({
   middleware: ["auth"],
@@ -11,7 +12,9 @@ definePageMeta({
 
 const supabase = useSupabaseClient<Database>();
 const { toast } = useToast();
+const { uploadFile, deleteFile } = useFiles();
 const loading = ref(false);
+
 const currentPost = ref<Database["public"]["Tables"]["post"]["Row"] | undefined>(undefined);
 const update = async () => {
   console.log("update");
@@ -20,9 +23,9 @@ const { data: posts, refresh } = await useAsyncData("posts", async () => {
   const { data: posts } = await supabase
     .from("post")
     .select(
-      "*"
+      "*, user:user_id(id, firstname, lastname), category:category_id(id, name_fr, name_en)"
     );
-  return posts;
+  return posts as unknown as Post[];
 });
 const file = ref();
 const open = ref(false);
@@ -30,30 +33,37 @@ const openConfirm = ref(false);
 const onSubmit = async (values: any) => {
   try {
     loading.value = true;
+    if (!currentPost.value && !file.value) {
+      toast({
+        title: "Please select an image",
+        variant: "destructive",
+      });
+      loading.value = false;
+      return;
+    }
+    let purl = null;
+    if (file.value) {
+      purl = await uploadFile(file.value);
+    }
     if (!currentPost.value) {
-      const { data, error } = await supabase
+     /* const { data, error } = await supabase
         .from("post")
         .insert({
-          title: values.post!,
-          post1: values.post1!,
-          post2: values.post2!,
-          post3: values.post3!,
-          answer: values.answer!,
-          meaning: values.meaning!,
-          level_id: values.level,
+          title: values.title!,
+          description: values.description!,
+          category_id: values.category_id!,
+          user_id: user.value?.id,
         })
-        .select();
+        .select();*/
     } else {
       const { data, error } = await supabase
         .from("post")
         .update({
-          post: values.post!,
-          post1: values.post1!,
-          post2: values.post2!,
-          post3: values.post3!,
-          answer: values.answer!,
-          meaning: values.meaning!,
-          level_id: values.level,
+          title: values.title!,
+          description: values.description!,
+          category_id: values.category_id!,
+          image: purl ? purl.url! : currentPost.value?.image,
+          image_path: purl ? purl.path! : currentPost.value?.image_path,
         })
         .eq("id", currentPost.value?.id!)
         .select();
@@ -86,6 +96,7 @@ async function deletePost() {
 async function confirmAction(id: string) {
   let item = posts.value?.find((item) => item.id === id);
   if (item) {
+    console.log(item);
     currentPost.value = item;
     openConfirm.value = true;
   }
@@ -104,7 +115,7 @@ async function updatePost(id: string) {
   <div class="container mx-auto">
     <div class="flex items-center justify-between">
       <h1 class="font-bold sm:text-4xl">Posts</h1>
-      <Button @click="() => (open = !open)">Add Post</Button>
+      <Button @click="() => (open = !open)" class=" hidden">Add Post</Button>
     </div>
     <DatatablesPostsDataTable
       :data="posts!"
@@ -117,6 +128,7 @@ async function updatePost(id: string) {
       :on-submit="onSubmit"
       :loading="loading"
       :open="open"
+      v-model="file"
       :set-open="
         () => {
           open = !open;

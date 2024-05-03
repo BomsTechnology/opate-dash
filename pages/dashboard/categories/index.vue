@@ -10,15 +10,13 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-type LanguageType = Database["public"]["Tables"]["category"]["Row"];
+type CategoryType = Database["public"]["Tables"]["category"]["Row"];
 const supabase = useSupabaseClient<Database>();
 const { uploadFile, deleteFile } = useFiles();
 const { toast } = useToast();
 const loading = ref(false);
-const currentLanguage = ref<LanguageType | undefined>(undefined);
-const update = async () => {
-  console.log("update");
-};
+const currentCategory = ref<CategoryType | undefined>(undefined);
+
 const { data: categories, refresh } = await useAsyncData(
   "categories",
   async () => {
@@ -33,36 +31,36 @@ const openConfirm = ref(false);
 const onSubmit = async (values: any) => {
   try {
     loading.value = true;
-    if (!currentLanguage && !file.value) {
+    if (!currentCategory.value && !file.value) {
       toast({
         title: "Please select an image",
         variant: "destructive",
       });
+      loading.value = false;
       return;
     }
     let purl = null;
     if (file.value) {
       purl = await uploadFile(file.value);
     }
-    if (!currentLanguage.value) {
+    if (!currentCategory.value) {
       const { data, error } = await supabase
         .from("category")
-        .insert({ name: values.name!, image: purl?.url!, path: purl?.path! })
+        .insert({ name_fr: values.name_fr!, name_en: values.name_en!, image: purl?.url!, image_path: purl?.path! })
         .select();
     } else {
       const { data, error } = await supabase
         .from("category")
         .update({
-          name: values.name!,
-          iso_code: values.iso_code!,
-          image: purl ? purl.url! : currentLanguage.value?.image,
-          path: purl ? purl.path! : currentLanguage.value?.path,
+          name_fr: values.name_fr!, name_en: values.name_en!,
+          image: purl ? purl.url! : currentCategory.value?.image,
+          image_path: purl ? purl.path! : currentCategory.value?.image_path,
         })
-        .eq("id", currentLanguage.value?.id!)
+        .eq("id", currentCategory.value?.id!)
         .select();
-      await deleteFile(currentLanguage.value?.path!);
+      await deleteFile(currentCategory.value?.image_path!);
     }
-    currentLanguage.value = undefined;
+    currentCategory.value = undefined;
     refresh();
     toast({ title: "Category added successfully" });
     open.value = false;
@@ -73,16 +71,16 @@ const onSubmit = async (values: any) => {
   }
 };
 
-async function deleteLanguage() {
+async function deleteCategory() {
   try {
     const { data, error } = await supabase
       .from("category")
       .delete()
-      .eq("id", currentLanguage.value?.id!);
+      .eq("id", currentCategory.value?.id!);
     if (error) throw error;
     refresh();
     openConfirm.value = false;
-    await deleteFile(currentLanguage.value?.path!);
+    await deleteFile(currentCategory.value?.image_path!);
   } catch (error) {
     toast({ title: (error as Error).message, variant: "destructive" });
   }
@@ -91,15 +89,15 @@ async function deleteLanguage() {
 async function confirmAction(id: string) {
   let item = categories.value?.find((item) => item.id === id);
   if (item) {
-    currentLanguage.value = item;
+    currentCategory.value = item;
     openConfirm.value = true;
   }
 }
 
-async function updateLanguage(id: string) {
+async function updateCategory(id: string) {
   let item = categories.value?.find((item) => item.id === id);
   if (item) {
-    currentLanguage.value = item;
+    currentCategory.value = item;
     open.value = true;
   }
 }
@@ -115,10 +113,10 @@ async function updateLanguage(id: string) {
       :data="categories!"
       :columns="columns"
       :deleteL="confirmAction"
-      :update="updateLanguage"
+      :update="updateCategory"
     />
     <ModalsAddEditCategory
-      :category="currentLanguage"
+      :category="currentCategory"
       :on-submit="onSubmit"
       :loading="loading"
       v-model="file"
@@ -126,14 +124,14 @@ async function updateLanguage(id: string) {
       :set-open="
         () => {
           open = !open;
-          currentLanguage = undefined;
+          currentCategory = undefined;
         }
       "
     />
-    <Confirm :on-submit="deleteLanguage" :open="openConfirm" :set-open="
+    <Confirm :on-submit="deleteCategory" :open="openConfirm" :set-open="
         () => {
           openConfirm = !openConfirm;
-          currentLanguage = undefined;
+          currentCategory = undefined;
         }
       "  />
   </div>

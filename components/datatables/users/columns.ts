@@ -21,6 +21,13 @@ export const columns: ColumnDef<Database['public']['Tables']['user']['Row']>[] =
     enableSorting: false,
     enableHiding: false,
 },
+{
+  accessorKey: 'id',
+  header: () => h('div', { class: 'text-left' }, 'ID'),
+  cell: ({ row }) => {
+    return h('div', { class: 'text-left font-medium max-w-[100px] text-ellipsis text-nowrap overflow-hidden' }, row.getValue('id'))
+  },
+},
   {
     accessorKey: 'order_number',
     header: () => h('div', { class: 'text-left' }, 'Order number'),
@@ -33,6 +40,17 @@ export const columns: ColumnDef<Database['public']['Tables']['user']['Row']>[] =
     header: () => h('div', { class: 'text-center' }, 'Avatar'),
     cell: ({ row }) => row.getValue('avatar') ? h('img', { class: 'h-8 object-cover w-8', src: row.getValue('avatar') }) : h('div', { class: 'text-center' }, '---------'),
   },
+  {
+    accessorKey: 'status',
+    header: () => h('div', { class: 'text-center' }, 'Active'),
+    cell: ({ row }) => {
+      if(row.getValue('status')) {
+        return h('div', { class: 'text-center font-medium border rounded p-0.5 border-green-500 text-green-500 uppercase text-xs' }, 'Active')
+      }else{
+        return h('div', { class: 'text-center font-medium border rounded p-0.5 border-red-500 text-red-500 uppercase text-xs' }, 'Not Active')
+    }
+  },
+},
   {
     
     accessorKey: 'firstname',
@@ -69,6 +87,7 @@ export const columns: ColumnDef<Database['public']['Tables']['user']['Row']>[] =
     },
     cell: ({ row }) => h('div', { class: 'lowercase text-center' }, row.getValue('email') ? row.getValue('email') : '---------'),
   },
+  
   {
     accessorKey: 'type',
     header: () => h('div', { class: 'text-center' }, 'Type'),

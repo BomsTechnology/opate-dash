@@ -10,5 +10,15 @@ export interface Post {
           status: boolean
           title: string
           user_id: string
+          user: {
+            id: string
+            firstname: string
+            lastname: string
+          }
+          category: {
+            id: string
+            name_fr: string
+            name_en: string
+          }
           view: number
 }

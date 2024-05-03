@@ -64,9 +64,9 @@ const handleFile = (e: any) => {
             accept="image/*"
             />
             
-        <FormField v-slot="{ componentField }" name="name" v-bind:model-value="category?.name">
+        <FormField v-slot="{ componentField }" name="name_fr" v-bind:model-value="category?.name_fr">
           <FormItem>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>Name FR</FormLabel>
             <FormControl>
               <Input
                 type="text"
@@ -78,13 +78,13 @@ const handleFile = (e: any) => {
             <FormMessage />
           </FormItem>
         </FormField>
-        <FormField v-slot="{ componentField }" name="iso_code" v-bind:model-value="category?.iso_code">
+        <FormField v-slot="{ componentField }" name="name_en" v-bind:model-value="category?.name_en">
           <FormItem>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>Name EN</FormLabel>
             <FormControl>
               <Input
                 type="text"
-                placeholder="fr"
+                placeholder="English"
                 v-bind="componentField"
                 
               />
